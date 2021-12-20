@@ -1,0 +1,3 @@
+ smbclient -L //192.168.3.10  ==>查看samba主机共享信息
+   mount -t cifs //192.168.3.10/temp  /mnt   ==>在linux主机上通过windows的cifs挂载 
+   mount -t cifs //192.168.3.10/smb1 /mnt/ -o username=smb1 

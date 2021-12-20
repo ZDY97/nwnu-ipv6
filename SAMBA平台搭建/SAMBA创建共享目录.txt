@@ -1,0 +1,33 @@
+[root@allinone01 samba]# cd
+[root@allinone01 ~]# mkdir /home/project
+[root@allinone01 ~]# chgrp users /home/project/
+[root@allinone01 ~]# chmod 2770 /home/project
+[root@allinone01 ~]# ll -d /home/project/
+drwxrws---. 2 root users 6 7月  18 12:22 /home/project/
+[root@allinone01 ~]# 
+[root@allinone01 ~]# useradd -G users samba1
+[root@allinone01 ~]# useradd -G users samba2
+[root@allinone01 ~]# useradd -G users samba3
+[root@allinone01 ~]# echo 1234|passwd --stdin samba1   
+
+passwd：所有的身份验证令牌已经成功更新。
+[root@allinone01 ~]# echo 1234|passwd --stdin samba2
+更改用户 smb2 的密码 。
+passwd：所有的身份验证令牌已经成功更新。
+[root@allinone01 ~]# echo 1234|passwd --stdin samba3
+更改用户 smb3 的密码 。
+passwd：所有的身份验证令牌已经成功更新。
+[root@allinone01 ~]# pdbedit -L
+[root@allinone01 ~]# pdbedit -a -u samba1   
+[root@allinone01 ~]# pdbedit -a -u samba2
+[root@allinone01 ~]# pdbedit -a -u samba3
+
+systemctl status/start/enable nmb.service 
+systemctl status/start/enable smb.service 
+systemctl restart smb.service nmb.service ==>修改完成重新启动上面的信息
+
+smbpasswd samba3 ==>修改用户密码
+
+useradd -G users samba4  ==>创建用户
+echo 1234|passwd --stdin samba4  ==>创建用户samba4密码
+	pdbedit -a -u samba4   ==>增加samba用户密码

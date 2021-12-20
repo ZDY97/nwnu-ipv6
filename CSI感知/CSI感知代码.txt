@@ -1,0 +1,68 @@
+csi_trace = read_bf_file('感知数据名.dat');
+%     load('user1-1-1-1-1-1-1e-07-100-20-100000-L0.mat') 
+len = length (csi_trace);
+for i=1:len
+     %length(csi_trace)%这里是取的数据包的个s数
+        timeline(i)=(csi_trace{i}.timestamp_low  - csi_trace{1}.timestamp_low  )/1000000;%以时间戳来画原始数据，单位s表示
+        csi_entry = csi_trace{i};
+        csi = get_scaled_csi(csi_entry); %提取csi矩阵
+%         rssi = get_scaled_rssia(csi_entry); %提取rssi矩阵
+        csi =csi(1,:,:);
+        csi1=db(abs(squeeze(csi).'));          %提取幅值(降维+转置)
+        a=db(get_eff_SNRs_sm(csi), 'pow');
+    for k=1:30    %30个子载波数据
+		B(1,:,k)=csi(1,:,k);
+		csi_one=squeeze(B).';	
+		csi_phase=angle(csi_one);%angle求复数矩阵相位角的弧度值，取值-pi到pi
+		csi_amplitude=abs(csi_one);%angle求复数矩阵的绝对值
+		phase(k,i)=csi_phase(k);	%第i个数据包的第k个子载波的相位值        【子载波，数据包】
+
+    end
+
+%         phase(1,i)=csi_phase(1);
+
+
+
+        %只取一根天线的数据
+        first_ant_csi(:,i)=csi1(:,1);       %提取第1条信道的全部子载波    %直接取第一列数据(不需要for循环取)
+        second_ant_csi(:,i)=csi1(:,2);     %提取第2条信道的全部子载波
+        third_ant_csi(:,i)=csi1(:,3);      %提取第3条信道的全部子载波
+        csi_f(i,:)=csi1(30,1);  %提取第1条信道的第30个子载波
+        csi_s(i,:)=csi1(30,2);  %提取第2条信道的第30个子载波
+        csi_t(i,:)=csi1(30,3);  %提取第3条信道的第30个子载波
+        phase_f=phase(1,:);
+                %third_ant_csi(:,i)=csi1(:,3);        
+end
+
+% shading interp 
+figure(1)
+subplot(3,1,1);%设置画图格式为6行1列，最后的1是只这个图排在第一个，也就是第一行第一列
+plot(timeline,first_ant_csi.')%第一条信道
+title('信道1');
+xlabel('时间 / s');
+ylabel('振幅 / dB');
+subplot(3,1,2);
+% figure
+plot(timeline,second_ant_csi.')%第二条信道
+title('信道2');
+xlabel('时间 / s');
+ylabel('振幅 / dB');
+subplot(3,1,3);
+% figure
+plot(timeline,third_ant_csi.')%第三条信道
+title('信道3');
+xlabel('时间 / s');
+ylabel('振幅 / dB');
+figure(2)
+subplot(3,1,1);
+plot(timeline,csi_f.')%第1条信道的第30个子载波
+title('信道1');
+ f = csi_f.';
+subplot(3,1,2);
+plot(timeline,csi_s.')%第2条信道的第30个子载波
+title('信道2');
+ s = csi_s.';
+ subplot(3,1,3);
+plot(timeline,csi_t.')%第3条信道的第30个子载波
+title('信道3');
+ t = csi_t.';
